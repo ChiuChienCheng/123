@@ -22,12 +22,8 @@ product_dict = {
 
 user_state = {}
 
-# 访问 CHANNEL_ACCESS_TOKEN 环境变量
 line_bot_api = LineBotApi(os.environ.get("CHANNEL_ACCESS_TOKEN"))
-
-# 访问 CHANNEL_SECRET 环境变量
 handler = WebhookHandler(os.environ.get("CHANNEL_SECRET"))
-
 
 # 設定 API key
 API_KEY = os.environ.get("API_KEY")
@@ -49,14 +45,11 @@ def handle_message(event):
     message = event.message.text
     if message == '下單':
         # 啟動下單流程
-        state, duration = ask_order_time(event)
+        state = ask_order_time(event)
         # 設定使用者的狀態為「處理下單」
         user_state[user_id] = state
-        if duration is not None:
-            user_state[user_id] = 'handle_link_response'
-            ask_link(event, duration)
     else:
-        if user_id in user_state and user_state[user_id][0] == 'handle_order_time_response':
+        if user_id in user_state and user_state[user_id] == 'handle_order_time_response':
             # 當使用者已經輸入下單需要的時間，就詢問使用者商品的直播網址
             product_id = product_dict.get(message)
             if product_id:
@@ -70,7 +63,6 @@ def handle_message(event):
         elif user_id in user_state and user_state[user_id][0] == 'handle_link_response':
             # 當使用者已經輸入商品的直播網址，就詢問使用者商品數量
             state = handle_link_response(event, user_state[user_id][1], '', user_state[user_id][3], message)
-
 
             user_state[user_id] = state
         elif user_id in user_state and user_state[user_id][0] == 'handle_order_quantity':
@@ -89,7 +81,7 @@ def handle_message(event):
 def ask_order_time(event):
     reply_message = TextSendMessage(text='請輸入直播時長(分鐘)：\n30 / 60 / 90 / 120 / 150 / 180 / 210 / 240')
     line_bot_api.reply_message(event.reply_token, reply_message)
-    return 'handle_order_time_response', None
+    return 'handle_order_time_response'
 
 def ask_link(event, product_id):
     reply_message = TextSendMessage(text=f'請提供時長{product_id}分鐘的直播網址：')
