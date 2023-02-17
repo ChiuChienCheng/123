@@ -1,12 +1,13 @@
-import requests
-import logging
+import os
+
 from linebot import LineBotApi, WebhookHandler
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, PostbackEvent
-from linebot.exceptions import LineBotApiError
+from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
+
 from flask import Flask, request, abort
 
-app = Flask(__name__)
 
+user_state = {}
 # 商品字典
 product_dict = {
     '30': '531',
@@ -19,7 +20,6 @@ product_dict = {
     '240': '538'
 }
 
-user_state = {}
 
 # 访问 CHANNEL_ACCESS_TOKEN 环境变量
 line_bot_api = LineBotApi(os.environ.get("CHANNEL_ACCESS_TOKEN"))
@@ -30,6 +30,9 @@ handler = WebhookHandler(os.environ.get("CHANNEL_SECRET"))
 
 # 設定 API key
 API_KEY = os.environ.get("API_KEY")
+
+app = Flask(__name__)
+
 
 @app.route("/line_callback", methods=['POST'])
 def line_callback():
