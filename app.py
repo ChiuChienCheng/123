@@ -22,11 +22,11 @@ product_dict = {
 
 user_state = {}
 
-line_bot_api = LineBotApi(os.environ.get("CHANNEL_ACCESS_TOKEN"))
-handler = WebhookHandler(os.environ.get("CHANNEL_SECRET"))
+line_bot_api = LineBotApi('tIZRyoTYmgneTRCj2Lv1P7tA9POCc+TT/kWSM4rWsSD+V1EEleB1BMOLYtztlIq6BHs02nxt0doI37jz3482eoJ1eX3GNk8FgPMJu9pWBpD0uMnD6lvb/KzAsgakRoLjt94TS5j/8iqUzwnDt6nGHQdB04t89/1O/w1cDnyilFU=')
+handler = WebhookHandler('12b6d2b52158ad4e1abcbd8e399c49a4')
 
 # 設定 API key
-API_KEY = os.environ.get("API_KEY")
+API_KEY = 'db9a7c0b4f0ae07b2643ed635e498ee6'
 
 @app.route("/line_callback", methods=['POST'])
 def line_callback():
@@ -79,7 +79,7 @@ def handle_message(event):
             # 詢問使用者下單需要的時間
             ask_order_time(event)
 def ask_order_time(event):
-    reply_message = TextSendMessage(text='請輸入直播時長(分鐘)：\n30 / 60 / 90 / 120 / 150 / 180 / 210 / 240')
+    reply_message = TextSendMessage(text='請輸入直播時長：30 / 60 / 90 / 120 / 150 / 180 / 210 / 240')
     line_bot_api.reply_message(event.reply_token, reply_message)
     return 'handle_order_time_response'
 
@@ -95,7 +95,7 @@ def handle_link_response(event, product_id, link, product_name, message):
     return 'handle_order_quantity', product_id, link, product_name
 
 def ask_quantity(event, product_name):
-    reply_message = TextSendMessage(text=f'請輸入下單人數：')
+    reply_message = TextSendMessage(text=f'請輸入{product_name}數量：')
     line_bot_api.reply_message(event.reply_token, reply_message)
 
 def handle_order_quantity(event, product_id, link, product_name):
@@ -124,6 +124,7 @@ def handle_order_quantity(event, product_id, link, product_name):
     else:
         reply_message = '下單失敗，請稍後再試'
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
+
 # 設定 Line bot 的 Webhook URL，讓 Line 可以將使用者訊息傳送到這個網址
 @app.route("/callback", methods=['POST'])
 def callback():
